@@ -1,4 +1,6 @@
 const { defineConfig } = require('cypress')
+const path = require('path')
+const fs = require('fs')
 
 module.exports = defineConfig({
   e2e: {
@@ -11,7 +13,7 @@ module.exports = defineConfig({
     viewportHeight: 720,
 
     video: false,
-    screenshotOnRunFailure: false,
+    screenshotOnRunFailure: true,
 
     defaultCommandTimeout: 10000,
     pageLoadTimeout: 30000,
@@ -29,7 +31,19 @@ module.exports = defineConfig({
     },
 
     setupNodeEvents(on, config) {
-      // Espaco para plugins futuros (code coverage, relatórios, etc.)
+      const screenshotsFolder = config.screenshotsFolder
+
+      on('after:screenshot', (details) => {
+        if (!details.testFailure) return
+
+        const match = details.path.match(/[/\\](\d{2})_/)
+        const cenario = match ? match[1] : 'other'
+        const newPath = path.join(screenshotsFolder, cenario, 'falha', path.basename(details.path))
+        fs.mkdirSync(path.dirname(newPath), { recursive: true })
+        fs.renameSync(details.path, newPath)
+
+        return { path: newPath }
+      })
     },
   },
 })

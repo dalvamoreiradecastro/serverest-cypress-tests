@@ -15,10 +15,10 @@
  *  NAO sao disparados pela UI. O teste 3 valida esse fluxo via API diretamente.
  *
  * Estrategia de dados:
- *  - Comprador criado PRIMEIRO no before() para garantir credenciais sempre definidas
- *  - Admin e produto criados via API para isolamento
- *  - beforeEach() cancela carrinho API residual antes de cada teste
- *  - after() faz limpeza completa de usuarios e produto
+ *  - Comprador criado em beforeEach() para resistir a resets do banco do ServeRest
+ *  - Admin e produto criados uma unica vez no before() (via API) para isolamento
+ *  - afterEach() cancela carrinho e remove comprador apos cada teste
+ *  - after() remove produto e admin ao final da suite
  */
 import ListaProdutosPage from '../pages/ListaProdutosPage'
 import CarrinhoPage from '../pages/CarrinhoPage'
@@ -38,24 +38,14 @@ describe('Fluxo de Jornada de Compra', () => {
   let compradorPassword
 
   before(() => {
-    cy.fixture('usuario').then(({ admin, padrao }) => {
+    cy.fixture('usuario').then(({ admin }) => {
       cy.fixture('produto').then(({ valido: produtoBase }) => {
-        // 1. Cria o comprador PRIMEIRO — garante que as variaveis estejam definidas
-        //    mesmo que a criacao do produto falhe depois
-        cy.criarUsuarioViaAPI(padrao).then((comprador) => {
-          compradorId = comprador._id
-          compradorEmail = comprador.email
-          compradorPassword = comprador.password
-        })
-
-        // 2. Cria admin e autentica para obter token de criacao de produto
         cy.criarUsuarioViaAPI(admin).then((adminCriado) => {
           adminId = adminCriado._id
 
           cy.loginViaAPI(adminCriado.email, adminCriado.password).then((token) => {
             adminToken = token
 
-            // 3. Cria o produto via API — necessario para o teste de listagem e compra
             cy.criarProdutoViaAPI(produtoBase, adminToken).then((produto) => {
               produtoCriado = produto
             })
@@ -66,27 +56,49 @@ describe('Fluxo de Jornada de Compra', () => {
   })
 
   after(() => {
-    // Cancela carrinho residual, remove produto e ambos os usuarios
-    if (compradorEmail && compradorPassword) {
-      cy.loginViaAPI(compradorEmail, compradorPassword).then((token) => {
-        cy.cancelarCarrinhoViaAPI(token)
-      })
-    }
     if (produtoCriado?._id && adminToken) {
       cy.deletarProdutoViaAPI(produtoCriado._id, adminToken)
     }
     if (adminId) cy.deletarUsuarioViaAPI(adminId)
-    if (compradorId) cy.deletarUsuarioViaAPI(compradorId)
   })
 
   beforeEach(() => {
-    // Cancela qualquer carrinho API residual de execucoes anteriores
-    cy.loginViaAPI(compradorEmail, compradorPassword).then((token) => {
-      cy.cancelarCarrinhoViaAPI(token)
-    })
+    cy.fixture('usuario').then(({ padrao }) => {
+      // Pre-carrega a pagina de login ANTES de criar o usuario.
+      // Isso absorve o tempo de carregamento da pagina na "fila", de modo que
+      // a criacao do usuario e o submit do formulario ocorrem em rapida sucessao
+      // (~300 ms de janela), reduzindo drasticamente o risco de reset do DB do ServeRest.
+      cy.visit('/login')
 
-    // Restaura sessao autenticada do comprador (cy.session reutiliza cache)
-    cy.sessaoAutenticada(compradorEmail, compradorPassword)
+      cy.criarUsuarioViaAPI(padrao).then((comprador) => {
+        compradorId = comprador._id
+        compradorEmail = comprador.email
+        compradorPassword = comprador.password
+
+        cy.get('[data-testid="email"]').type(compradorEmail)
+        cy.get('[data-testid="senha"]').type(compradorPassword, { log: false })
+        cy.get('[data-testid="entrar"]').click()
+        cy.url().should('include', '/home')
+      })
+    })
+  })
+
+  afterEach(() => {
+    // failOnStatusCode: false — se o DB resetou e o usuario ja nao existe,
+    // a limpeza falha silenciosamente sem contaminar o resultado do teste
+    if (compradorEmail && compradorPassword) {
+      cy.request({
+        method: 'POST',
+        url: `${Cypress.env('apiUrl')}/login`,
+        body: { email: compradorEmail, password: compradorPassword },
+        failOnStatusCode: false,
+      }).then(({ status, body }) => {
+        if (status === 200 && body.authorization) {
+          cy.cancelarCarrinhoViaAPI(body.authorization)
+        }
+      })
+    }
+    if (compradorId) cy.deletarUsuarioViaAPI(compradorId)
   })
 
   // ---------------------------------------------------------------------------
