@@ -7,7 +7,8 @@ module.exports = defineConfig({
     baseUrl: 'https://front.serverest.dev',
     specPattern: 'cypress/e2e/**/*.cy.js',
     supportFile: 'cypress/support/e2e.js',
-
+    reporter:'mochawesome',
+    
     // Dimensoes representativas de desktop (evita problemas de layout responsivo)
     viewportWidth: 1280,
     viewportHeight: 720,
