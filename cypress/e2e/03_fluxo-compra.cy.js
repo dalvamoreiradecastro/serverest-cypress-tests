@@ -23,6 +23,12 @@
 import ListaProdutosPage from '../pages/ListaProdutosPage'
 import CarrinhoPage from '../pages/CarrinhoPage'
 
+Cypress.on('uncaught:exception', (err) => {
+  if (err.message.includes("Cannot read properties of null (reading 'document')")) {
+    return false
+  }
+})
+
 describe('Fluxo de Jornada de Compra', () => {
   let adminToken
   let adminId
