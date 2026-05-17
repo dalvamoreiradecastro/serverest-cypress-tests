@@ -1,0 +1,15 @@
+{
+  "name": "serverest-cypress-tests",
+  "version": "1.0.0",
+  "description": "Testes E2E e de API automatizados para ServeRest com Cypress",
+  "scripts": {
+    "cy:open": "cypress open",
+    "cy:run": "cypress run",
+    "cy:run:autenticacao": "cypress run --spec 'cypress/e2e/01_autenticacao.cy.js'",
+    "cy:run:cadastro": "cypress run --spec 'cypress/e2e/02_cadastro-usuario.cy.js'",
+    "cy:run:compra": "cypress run --spec 'cypress/e2e/03_fluxo-compra.cy.js'"
+  },
+  "devDependencies": {
+    "cypress": "^13.0.0"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "valido": {
+    "nome": "Notebook Cypress Automatizado",
+    "preco": 1500,
+    "descricao": "Produto criado via automacao Cypress para testes E2E",
+    "quantidade": 10,
+    "imagem": "https://i.imgur.com/LQs4o5m.jpeg"
+  }
+}

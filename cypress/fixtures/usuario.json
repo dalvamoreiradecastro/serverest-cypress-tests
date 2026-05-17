@@ -1,0 +1,16 @@
+{
+  "admin": {
+    "nome": "Admin QA Cypress",
+    "password": "cypress@123",
+    "administrador": "true"
+  },
+  "padrao": {
+    "nome": "Usuario QA Cypress",
+    "password": "cypress@123",
+    "administrador": "false"
+  },
+  "invalido": {
+    "email": "nao_existe_jamais@invalido.com",
+    "password": "SenhaErradaQueNaoExiste999"
+  }
+}
