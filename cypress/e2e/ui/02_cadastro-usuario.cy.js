@@ -5,7 +5,7 @@
  * Cobre validacao de formulario, unicidade de email e o caminho feliz
  * de criacao de conta — todos criticos para o onboarding.
  */
-import CadastroPage from '../pages/CadastroPage'
+import CadastroPage from '../../pages/CadastroPage'
 
 describe('Fluxo de Cadastro de Usuario', () => {
   // Armazena o _id do usuario criado no teste de caminho feliz

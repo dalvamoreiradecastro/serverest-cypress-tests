@@ -5,7 +5,7 @@
  * Sem autenticacao valida nenhuma feature e acessivel.
  * Validamos o caminho feliz, erro de credenciais e validacao de campos.
  */
-import LoginPage from '../pages/LoginPage'
+import LoginPage from '../../pages/LoginPage'
 
 describe('Fluxo de Autenticacao', () => {
   // Dados compartilhados entre os testes do bloco

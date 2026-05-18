@@ -1,16 +1,5 @@
 import { DOMAIN, ENDPOINTS } from '../constants/Urls'
 
-/**
- * Classe de acesso ao endpoint /produtos.
- *
- * Operações de escrita (POST, PUT, DELETE) são restritas a administradores
- * e exigem o token Bearer no header Authorization. Passar token=null simula
- * um request sem autenticação — padrão útil para testar o cenário 401.
- *
- * A separação entre leitura (pública) e escrita (admin-only) é a regra
- * de negócio mais crítica do catálogo — cada método deixa isso explícito
- * nos parâmetros para tornar as intenções do teste legíveis.
- */
 export class ProdutosApi {
   /**
    * Lista produtos. Aceita query params para filtros (ex.: { nome: 'Notebook' }).
@@ -39,9 +28,7 @@ export class ProdutosApi {
 
   /**
    * Cria produto. Requer token de administrador.
-   * token=null → headers vazios → API retorna 401 (ausência de token).
-   * token de não-admin → API retorna 403 (permissão insuficiente).
-   * Retorna 400 se já existir produto com o mesmo nome.
+   * token=null → 401, não-admin → 403, nome duplicado → 400.
    */
   static criar(payload, token) {
     const headers = token ? { Authorization: token } : {}

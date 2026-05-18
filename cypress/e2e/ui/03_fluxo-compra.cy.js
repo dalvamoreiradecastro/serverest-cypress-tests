@@ -20,8 +20,8 @@
  *  - afterEach() cancela carrinho e remove comprador apos cada teste
  *  - after() remove produto e admin ao final da suite
  */
-import ListaProdutosPage from '../pages/ListaProdutosPage'
-import CarrinhoPage from '../pages/CarrinhoPage'
+import ListaProdutosPage from '../../pages/ListaProdutosPage'
+import CarrinhoPage from '../../pages/CarrinhoPage'
 
 Cypress.on('uncaught:exception', (err) => {
   if (err.message.includes("Cannot read properties of null (reading 'document')")) {
