@@ -7,7 +7,11 @@
     "cy:run": "cypress run",
     "cy:run:autenticacao": "cypress run --spec 'cypress/e2e/01_autenticacao.cy.js'",
     "cy:run:cadastro": "cypress run --spec 'cypress/e2e/02_cadastro-usuario.cy.js'",
-    "cy:run:compra": "cypress run --spec 'cypress/e2e/03_fluxo-compra.cy.js' --reporter mochawesome"
+    "cy:run:compra": "cypress run --spec 'cypress/e2e/03_fluxo-compra.cy.js' --reporter mochawesome",
+    "cy:run:api": "cypress run --spec 'cypress/e2e/api/**/*.cy.js'",
+    "cy:run:api:produtos": "cypress run --spec 'cypress/e2e/api/04_produtos-api.cy.js'",
+    "cy:run:api:usuarios": "cypress run --spec 'cypress/e2e/api/05_usuarios-api.cy.js'",
+    "cy:run:api:carrinhos": "cypress run --spec 'cypress/e2e/api/06_carrinhos-api.cy.js'"
   },
   "devDependencies": {
     "cypress": "^13.0.0"
