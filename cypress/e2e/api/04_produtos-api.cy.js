@@ -178,19 +178,21 @@ describe('Gerenciamento de Produtos — API', () => {
   // Cenário 3: Controle de acesso — operações de escrita são admin-only
   // ---------------------------------------------------------------------------
 
-  it('deve rejeitar criacao de produto sem token de autenticacao com status 401', () => {
-    // Simula um cliente que não enviou o header Authorization
-    ProdutosApi.criar(novoProdutoPayload(), null).then(({ status, body }) => {
-      expect(status).to.eq(401)
-      expect(body.message).to.include('Token de acesso ausente')
+  describe('Controle de acesso — operacoes de escrita sao admin-only', () => {
+    it('deve rejeitar criacao de produto sem token de autenticacao com status 401', () => {
+      // Simula um cliente que não enviou o header Authorization
+      ProdutosApi.criar(novoProdutoPayload(), null).then(({ status, body }) => {
+        expect(status).to.eq(401)
+        expect(body.message).to.include('Token de acesso ausente')
+      })
     })
-  })
 
-  it('deve rejeitar criacao de produto com token de usuario nao administrador com status 403', () => {
-    // Token válido, mas de um usuário sem permissão de admin — deve ser bloqueado
-    ProdutosApi.criar(novoProdutoPayload(), compradorToken).then(({ status, body }) => {
-      expect(status).to.eq(403)
-      expect(body.message).to.include('Rota exclusiva para administradores')
+    it('deve rejeitar criacao de produto com token de usuario nao administrador com status 403', () => {
+      // Token válido, mas de um usuário sem permissão de admin — deve ser bloqueado
+      ProdutosApi.criar(novoProdutoPayload(), compradorToken).then(({ status, body }) => {
+        expect(status).to.eq(403)
+        expect(body.message).to.include('Rota exclusiva para administradores')
+      })
     })
   })
 })
